@@ -1,0 +1,62 @@
+[
+  {
+    "ID_Orden": "ORD-0001",
+    "Fecha": "2026-11-04 10:15:00",
+    "Cliente": "Carlos Mendoza",
+    "Producto": "Camiseta deportiva (AS002)",
+    "Cantidad_Total": 2,
+    "Local_Venta": "Sucursal Principal",
+    "Detalle_Entrega": {
+      "entregadas_momento": 2,
+      "pendientes_retiro": 0,
+      "local_retiro": "Sucursal Principal"
+    },
+    "Estado_Global": "Completado",
+    "Tipo_Venta": "Normal"
+  },
+  {
+    "ID_Orden": "ORD-0002",
+    "Fecha": "2026-11-05 09:30:15",
+    "Cliente": "Elvis Ortega",
+    "Producto": "Zapatillas para correr (AS001)",
+    "Cantidad_Total": 5,
+    "Local_Venta": "Sucursal Principal",
+    "Detalle_Entrega": {
+      "entregadas_momento": 3,
+      "pendientes_retiro": 2,
+      "local_retiro": "Sucursal Secundaria"
+    },
+    "Estado_Global": "Pendiente de retiro parcial",
+    "Tipo_Venta": "Fraccionada"
+  },
+  {
+    "ID_Orden": "ORD-0003",
+    "Fecha": "2026-11-05 11:20:45",
+    "Cliente": "Mariana Ríos",
+    "Producto": "Balón de fútbol (AS003)",
+    "Cantidad_Total": 6,
+    "Local_Venta": "Sucursal Secundaria",
+    "Detalle_Entrega": {
+      "entregadas_momento": 5,
+      "pendientes_retiro": 1,
+      "local_retiro": "Sucursal Principal"
+    },
+    "Estado_Global": "Pendiente de retiro parcial",
+    "Tipo_Venta": "Fraccionada"
+  },
+  {
+    "ID_Orden": "ORD-0004",
+    "Fecha": "2026-11-05 14:14:07",
+    "Cliente": "holllllll",
+    "Producto": "Zapatillas para correr (AS001)",
+    "Cantidad_Total": 10,
+    "Local_Venta": "Sucursal Secundaria",
+    "Detalle_Entrega": {
+      "entregadas_momento": 8,
+      "pendientes_retiro": 2,
+      "local_retiro": "Sucursal Principal"
+    },
+    "Estado_Global": "Pendiente de retiro parcial",
+    "Tipo_Venta": "Fraccionada"
+  }
+]

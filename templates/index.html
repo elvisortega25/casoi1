@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACTIVE SPORT S.A. | Inventario, Auditoría de Ventas &amp; Venta Fraccionada</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <!-- Contenedor de notificaciones flotantes (Toast) -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Barra de Navegación Superior -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">ACTIVE SPORT S.A.</h1>
+          <p class="brand-subtitle">Inventario &bull; Venta Cruzada Fraccionada &bull; 2 Sucursales Físicas</p>
+        </div>
+      </div>
+
+      <nav class="header-nav">
+        <a href="#dashboard" class="nav-link active" data-section="dashboard">
+          <span class="nav-icon">📊</span> Reporte Gerencial
+        </a>
+        <a href="#auditoria-ventas" class="nav-link" data-section="auditoria-ventas">
+          <span class="nav-icon">📈</span> Auditoría de Ventas
+        </a>
+        <a href="#seguimiento" class="nav-link" data-section="seguimiento">
+          <span class="nav-icon">📦</span> Seguimiento Retiros
+          <span id="navBadgePendientes" class="nav-counter" style="display: none;">0</span>
+        </a>
+        <a href="#inventario" class="nav-link" data-section="inventario">
+          <span class="nav-icon">🏢</span> Stock por Local
+        </a>
+        <a href="#movimientos" class="nav-link" data-section="movimientos">
+          <span class="nav-icon">🛒</span> Registrar Venta
+        </a>
+        <a href="#historial" class="nav-link" data-section="historial">
+          <span class="nav-icon">📜</span> Movimientos
+        </a>
+        <a href="#arquitectura" class="nav-link" data-section="arquitectura">
+          <span class="nav-icon">🏛️</span> Arquitectura
+        </a>
+      </nav>
+
+      <div class="header-actions">
+        <!-- Selector Rápido de Sucursal Activa en Barra Superior -->
+        <div class="branch-selector-header">
+          <span class="branch-label">Operando en:</span>
+          <select id="globalLocalSelect" class="branch-select" title="Selecciona la sucursal donde estás operando">
+            <option value="principal" selected>🏢 Sucursal Principal</option>
+            <option value="secundaria">🏬 Sucursal Secundaria</option>
+          </select>
+        </div>
+
+        <!-- Perfil de Usuario Logueado (Administrador / Gerente) -->
+        <div class="user-profile-badge" id="userProfileBadge" title="Sesión activa">
+          <span class="user-avatar" id="headerUserAvatar">🛡️</span>
+          <div class="user-info-text">
+            <strong class="user-name" id="headerUserName">Administrador</strong>
+            <span class="user-role-tag" id="headerUserRole">Administrador</span>
+          </div>
+          <button type="button" id="btnSwitchUser" class="btn-switch-user" title="Cambiar de usuario o rol">⇄</button>
+          <button type="button" id="btnLogout" class="btn-logout" title="Cerrar sesión">Salir</button>
+        </div>
+
+        <button id="btnReiniciar" class="btn btn-outline-danger btn-sm" title="Restablecer datos originales del caso">
+          <span>↺</span> Reiniciar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido Principal -->
+  <main class="main-content">
+
+    <!-- ==================================================================== -->
+    <!-- SECCIÓN 1: REPORTE GERENCIAL (DASHBOARD)                              -->
+    <!-- ==================================================================== -->
+    <section id="dashboard" class="section-block">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">Panel Ejecutivo</span>
+          <h2 class="section-title">Reporte Gerencial Consolidado</h2>
+          <p class="section-desc">Métricas en tiempo real entre Sucursal Principal y Sucursal Secundaria.</p>
+        </div>
+        <div class="last-update">
+          <span>Actualizado: </span>
+          <strong id="dashboardTimestamp">--:--:--</strong>
+        </div>
+      </div>
+
+      <!-- Tarjetas KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card kpi-primary">
+          <div class="kpi-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-label">Stock Global Total</span>
+            <div class="kpi-value" id="kpiTotalStock">0</div>
+            <span class="kpi-subtext" id="kpiDesgloseStock">Principal: 0 | Secundaria: 0</span>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-cruzada">
+          <div class="kpi-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-label">Retiros Pendientes</span>
+            <div class="kpi-value" id="kpiPendientesRetiro">0</div>
+            <span class="kpi-subtext">Órdenes con retiro parcial en espera</span>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-warning" id="kpiAlertaCard">
+          <div class="kpi-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-label">Alerta Stock Mínimo</span>
+            <div class="kpi-value" id="kpiBajoStock">0</div>
+            <span class="kpi-subtext">Artículos con stock total ≤ mínimo</span>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-success">
+          <div class="kpi-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+              <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-label">Ventas Totales Mes</span>
+            <div class="kpi-value" id="kpiTotalVentas">0</div>
+            <span class="kpi-subtext" id="kpiVentasCruzadasSubtext">0 ventas fraccionadas</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grid de Reportes Detallados -->
+      <div class="dashboard-split-grid">
+        <div class="card dashboard-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-badge bg-gold">TOP 3</span>
+              <h3 class="card-title">Productos Más Vendidos del Mes</h3>
+            </div>
+            <span class="card-subtitle">Clasificación consolidada de ventas</span>
+          </div>
+          <div class="card-body">
+            <div id="topVentasList" class="top-ventas-container">
+              <div class="loading-placeholder">Cargando ranking...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card dashboard-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <span class="card-badge bg-danger">REPOSICIÓN</span>
+              <h3 class="card-title">Artículos en Nivel Crítico</h3>
+            </div>
+            <span class="card-subtitle">Stock total consolidado ≤ stock mínimo</span>
+          </div>
+          <div class="card-body">
+            <div id="alertasStockList" class="alertas-stock-container">
+              <div class="loading-placeholder">Analizando inventario...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SECCIÓN 2: AUDITORÍA DE VENTAS POR SUCURSAL & REPORTES GERENCIALES    -->
+    <!-- ==================================================================== -->
+    <section id="auditoria-ventas" class="section-block">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">Auditoría &amp; Proyecciones</span>
+          <h2 class="section-title">Auditoría de Ventas por Sucursal</h2>
+          <p class="section-desc">Consultas por Día, Mes y Año, métricas comparativas entre sucursales y proyecciones de cierre y agotamiento.</p>
+        </div>
+        <div class="header-section-btns">
+          <button id="btnRefreshAuditoria" class="btn btn-outline btn-sm">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Actualizar Auditoría</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tarjetas KPI de Auditoría de Ventas -->
+      <div class="kpi-grid">
+        <!-- Sucursal Principal -->
+        <div class="kpi-card kpi-sucursal-1">
+          <div class="kpi-icon-wrap icon-sucursal-1">
+            <span style="font-size: 1.5rem;">🏢</span>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-label">Ventas Sucursal Principal</span>
+            <div class="kpi-value" id="kpiAuditoriaSucursal1">0</div>
+            <span class="kpi-subtext" id="kpiAuditoriaSucursal1Sub">0% del total | 0 órdenes</span>
+          </div>
+        </div>
+
+        <!-- Sucursal Secundaria -->
+        <div class="kpi-card kpi-sucursal-2">
+          <div class="kpi-icon-wrap icon-sucursal-2">
+            <span style="font-size: 1.5rem;">🏬</span>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-label">Ventas Sucursal Secundaria</span>
+            <div class="kpi-value" id="kpiAuditoriaSucursal2">0</div>
+            <span class="kpi-subtext" id="kpiAuditoriaSucursal2Sub">0% del total | 0 órdenes</span>
+          </div>
+        </div>
+
+        <!-- Total Consolidado -->
+        <div class="kpi-card kpi-primary">
+          <div class="kpi-icon-wrap">
+            <span style="font-size: 1.5rem;">🌐</span>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-label">Total Global Consolidado</span>
+            <div class="kpi-value" id="kpiAuditoriaTotal">0</div>
+            <span class="kpi-subtext" id="kpiAuditoriaTotalSub">Total uds vendidas en red</span>
+          </div>
+        </div>
+
+        <!-- Proyección Mes -->
+        <div class="kpi-card kpi-projection">
+          <div class="kpi-icon-wrap icon-projection">
+            <span style="font-size: 1.5rem;">📈</span>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-label">Proyección Cierre de Mes</span>
+            <div class="kpi-value" id="kpiAuditoriaProyeccion">0</div>
+            <span class="kpi-subtext" id="kpiAuditoriaProyeccionSub">Basado en promedio diario</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra de Filtros de Auditoría -->
+      <div class="card toolbar-card mb-4">
+        <div class="audit-filters-bar">
+          <!-- Filtro de Sucursal -->
+          <div class="audit-filter-item">
+            <label for="filtroAuditoriaSucursal" class="mini-label">Sucursal a Consultar:</label>
+            <select id="filtroAuditoriaSucursal" class="form-control form-control-sm">
+              <option value="todas">🏢 + 🏬 Todas las Sucursales</option>
+              <option value="Sucursal Principal">🏢 Solo Sucursal Principal</option>
+              <option value="Sucursal Secundaria">🏬 Solo Sucursal Secundaria</option>
+            </select>
+          </div>
+
+          <!-- Agrupación Temporal: Día / Mes / Año -->
+          <div class="audit-filter-item">
+            <label class="mini-label">Agrupar Reporte por:</label>
+            <div class="btn-group-toggle">
+              <button type="button" class="btn-toggle active" data-agrupacion="dia">📅 Por Día</button>
+              <button type="button" class="btn-toggle" data-agrupacion="mes">📆 Por Mes</button>
+              <button type="button" class="btn-toggle" data-agrupacion="ano">📊 Por Año</button>
+            </div>
+          </div>
+
+          <!-- Filtro de Fecha Específica -->
+          <div class="audit-filter-item">
+            <label for="filtroAuditoriaFecha" class="mini-label">Filtrar Fecha / Período:</label>
+            <div class="input-with-clear">
+              <input type="text" id="filtroAuditoriaFecha" class="form-control form-control-sm" placeholder="Ej. 2026-11 o 2026-11-05">
+              <button type="button" id="btnClearAuditoriaFecha" class="btn-clear-date" title="Limpiar">&times;</button>
+            </div>
+          </div>
+
+          <!-- Búsqueda rápida -->
+          <div class="audit-filter-item audit-filter-search">
+            <label for="filtroAuditoriaBusqueda" class="mini-label">Buscar Transacción:</label>
+            <input type="text" id="filtroAuditoriaBusqueda" class="form-control form-control-sm" placeholder="Cliente, producto o ID orden...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Cuadro Ejecutivo de Proyecciones Gerenciales -->
+      <div class="card executive-summary-card mb-4">
+        <div class="card-header border-bottom">
+          <div class="card-title-group">
+            <span class="card-badge bg-gold">PROYECCIONES</span>
+            <h3 class="card-title">Análisis Predictivo &amp; Proyecciones Gerenciales</h3>
+          </div>
+          <span class="card-subtitle" id="proyeccionesSubtitle">Estimaciones y cobertura de inventario</span>
+        </div>
+        <div class="card-body">
+          <div class="projections-summary-grid">
+            <div class="projection-box">
+              <span class="proj-title">Ritmo Diario Global</span>
+              <div class="proj-stat"><strong id="projRitmoDiario">0.0</strong> <small>uds/día</small></div>
+              <p class="proj-desc">Promedio calculado sobre los días con actividad comercial auditada.</p>
+            </div>
+            <div class="projection-box">
+              <span class="proj-title">Proyección Sucursal Principal</span>
+              <div class="proj-stat text-principal"><strong id="projMesPrincipal">0</strong> <small>uds a fin de mes</small></div>
+              <p class="proj-desc" id="projRitmoPrincipal">Ritmo: 0.0 uds/día</p>
+            </div>
+            <div class="projection-box">
+              <span class="proj-title">Proyección Sucursal Secundaria</span>
+              <div class="proj-stat text-secundaria"><strong id="projMesSecundaria">0</strong> <small>uds a fin de mes</small></div>
+              <p class="proj-desc" id="projRitmoSecundaria">Ritmo: 0.0 uds/día</p>
+            </div>
+            <div class="projection-box">
+              <span class="proj-title">Cobertura de Stock Global</span>
+              <div class="proj-stat text-warning"><strong id="projDiasCobertura">0.0</strong> <small>días restantes</small></div>
+              <p class="proj-desc" id="projAlertaStock">Inventario disponible antes del agotamiento proyectado.</p>
+            </div>
+          </div>
+          <!-- Barra de Proporción de Ventas entre Sucursales -->
+          <div class="branch-share-container mt-3">
+            <div class="branch-share-labels">
+              <span id="labelSharePrincipal">🏢 Sucursal Principal: 0%</span>
+              <span id="labelShareSecundaria">🏬 Sucursal Secundaria: 0%</span>
+            </div>
+            <div class="branch-share-bar">
+              <div id="barSharePrincipal" class="share-fill fill-principal" style="width: 50%;"></div>
+              <div id="barShareSecundaria" class="share-fill fill-secundaria" style="width: 50%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla 1: Reporte Agrupado Temporal (Por Día / Mes / Año) -->
+      <div class="card table-card mb-4">
+        <div class="card-header border-bottom">
+          <div class="card-title-group">
+            <span class="card-badge bg-primary">RESUMEN CONSOLIDADO</span>
+            <h3 class="card-title" id="tituloTablaAgrupada">Ventas por Día (Sucursal Principal vs Secundaria)</h3>
+          </div>
+          <span class="card-subtitle">Comparativa temporal de ventas cerradas</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="tablaAgrupadaAuditoria">
+            <thead>
+              <tr>
+                <th style="width: 140px;" id="thPeriodoAgrupado">Fecha / Período</th>
+                <th class="text-center" style="width: 160px;">🏢 Sucursal Principal</th>
+                <th class="text-center" style="width: 160px;">🏬 Sucursal Secundaria</th>
+                <th class="text-center" style="width: 150px;">🌐 Total Unidades</th>
+                <th class="text-center" style="width: 120px;">Nº Órdenes</th>
+                <th class="text-center" style="width: 180px;">Sucursal Predominante</th>
+                <th class="text-center" style="width: 160px;">Participación</th>
+              </tr>
+            </thead>
+            <tbody id="agrupadaTableBody">
+              <tr>
+                <td colspan="7" class="text-center py-4">Cargando reporte temporal...</td>
+              </tr>
+            </tbody>
+            <tfoot id="agrupadaTableFoot">
+              <!-- Totales consolidados -->
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabla 2: Auditoría Detallada Transaccional de Ventas -->
+      <div class="card table-card">
+        <div class="card-header border-bottom">
+          <div class="card-title-group">
+            <span class="card-badge bg-dark">BITÁCORA TRANSACCIONAL</span>
+            <h3 class="card-title">Auditoría Detallada de Transacciones de Venta</h3>
+          </div>
+          <span class="card-subtitle" id="subtituloAuditoriaDetalle">Listado de órdenes auditadas</span>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="tablaDetalleAuditoria">
+            <thead>
+              <tr>
+                <th style="width: 105px;">ID Orden</th>
+                <th style="width: 150px;">Fecha y Hora</th>
+                <th style="width: 170px;">Sucursal de Venta</th>
+                <th>Cliente</th>
+                <th>Producto</th>
+                <th class="text-center" style="width: 80px;">Cant.</th>
+                <th>Detalle de Entrega</th>
+                <th class="text-center" style="width: 110px;">Modalidad</th>
+                <th class="text-center" style="width: 130px;">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="auditoriaDetalleTableBody">
+              <tr>
+                <td colspan="9" class="text-center py-4">Cargando bitácora de ventas...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <span id="auditoriaSummaryText">Mostrando 0 ventas auditadas</span>
+          <div class="legend-group">
+            <span class="legend-item"><span class="badge-branch-tag tag-principal">Sucursal Principal</span></span>
+            <span class="legend-item"><span class="badge-branch-tag tag-secundaria">Sucursal Secundaria</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SECCIÓN 3: MÓDULO DE SEGUIMIENTO DE RETIROS (VENTA FRACCIONADA)       -->
+    <!-- ==================================================================== -->
+    <section id="seguimiento" class="section-block">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">Logística de Retiros Parciales</span>
+          <h2 class="section-title">Módulo de Seguimiento de Retiros</h2>
+          <p class="section-desc">Monitoreo de entregas inmediatas y confirmación de retiros de saldo pendiente en <code>seguimiento_ventas.json</code>.</p>
+        </div>
+        <div>
+          <button id="btnRefreshSeguimiento" class="btn btn-outline btn-sm">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Actualizar Seguimiento</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card table-card">
+        <!-- Barra de herramientas del módulo de seguimiento -->
+        <div class="table-toolbar">
+          <div class="filter-group">
+            <button class="filter-chip active" data-filter-seguimiento="todos">
+              Todas las Órdenes (<span id="countSeguimientoTodos">0</span>)
+            </button>
+            <button class="filter-chip chip-warning" data-filter-seguimiento="pendiente">
+              ⏳ Pendiente de Retiro Parcial (<span id="countSeguimientoPendientes">0</span>)
+            </button>
+            <button class="filter-chip chip-success" data-filter-seguimiento="completado">
+              ✓ Completadas (<span id="countSeguimientoEntregados">0</span>)
+            </button>
+            <button class="filter-chip" data-filter-seguimiento="fraccionada">
+              🔄 Solo Ventas Fraccionadas (<span id="countSeguimientoCruzadas">0</span>)
+            </button>
+          </div>
+
+          <div class="toolbar-branch-filter">
+            <label for="filtroLocalRetiro" class="mini-label">Filtrar por Retiro en:</label>
+            <select id="filtroLocalRetiro" class="form-control form-control-sm">
+              <option value="todos">Todas las Sucursales</option>
+              <option value="Sucursal Principal">🏢 Sucursal Principal</option>
+              <option value="Sucursal Secundaria">🏬 Sucursal Secundaria</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Banner explicativo de Venta Fraccionada -->
+        <div class="info-alert-strip">
+          <span class="info-strip-icon">ℹ️</span>
+          <span>
+            <strong>Lógica de Venta Cruzada Fraccionada:</strong> Cuando un cliente compra más de lo que tiene la sucursal actual, 
+            se entrega todo el stock disponible en el momento y el saldo restante se descuenta del inventario de la otra sucursal. 
+            El pedido queda como <span class="badge-pending-inline">Pendiente de retiro parcial</span> hasta pulsar el botón 
+            <strong>"Confirmar Retiro de Saldo"</strong> en el local de destino.
+          </span>
+        </div>
+
+        <!-- Tabla Interactiva de Seguimiento -->
+        <div class="table-responsive">
+          <table class="data-table" id="tablaSeguimiento">
+            <thead>
+              <tr>
+                <th style="width: 105px;">ID Orden</th>
+                <th style="width: 145px;">Fecha / Hora</th>
+                <th>Cliente</th>
+                <th>Producto</th>
+                <th class="text-center" style="width: 75px;">Cant.</th>
+                <th>Local Venta</th>
+                <th style="width: 200px;">Detalle de Entrega</th>
+                <th>Sucursal de Retiro</th>
+                <th class="text-center" style="width: 120px;">Tipo Venta</th>
+                <th class="text-center" style="width: 175px;">Estado Global</th>
+                <th class="text-center" style="width: 195px;">Acción de Retiro</th>
+              </tr>
+            </thead>
+            <tbody id="seguimientoTableBody">
+              <tr>
+                <td colspan="11" class="text-center py-4">Cargando órdenes de seguimiento...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-footer">
+          <span id="seguimientoSummaryText">Mostrando 0 órdenes</span>
+          <div class="legend-group">
+            <span class="legend-item"><span class="legend-dot dot-pending"></span> Pendiente de retiro parcial (¡Atención requerida!)</span>
+            <span class="legend-item"><span class="legend-dot dot-success"></span> Completado</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SECCIÓN 4: MÓDULO DE INVENTARIO CON EXISTENCIAS POR SUCURSAL         -->
+    <!-- ==================================================================== -->
+    <section id="inventario" class="section-block">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">Existencias por Local</span>
+          <h2 class="section-title">Módulo de Inventario</h2>
+          <p class="section-desc">Desglose de existencias físicas independientes entre Sucursal Principal y Sucursal Secundaria.</p>
+        </div>
+      </div>
+
+      <div class="card table-card">
+        <div class="table-toolbar">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Buscar por código (ej. AS001) o nombre del producto..." autocomplete="off">
+            <button id="clearSearchBtn" class="clear-search-btn" title="Limpiar búsqueda" style="display: none;">&times;</button>
+          </div>
+
+          <div class="filter-group">
+            <button class="filter-chip active" data-filter="todos">Todos (<span id="countTodos">0</span>)</button>
+            <button class="filter-chip chip-warning" data-filter="alerta">
+              ⚠️ Alerta Mínimo (<span id="countAlerta">0</span>)
+            </button>
+            <button class="filter-chip chip-success" data-filter="optimo">
+              ✓ Nivel Óptimo (<span id="countOptimo">0</span>)
+            </button>
+          </div>
+
+          <button id="btnRefreshTable" class="btn btn-outline btn-sm" title="Actualizar datos">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Actualizar</span>
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="tablaInventario">
+            <thead>
+              <tr>
+                <th style="width: 100px;">Código</th>
+                <th>Descripción del Producto</th>
+                <th class="text-center" style="width: 125px;">Stock Principal</th>
+                <th class="text-center" style="width: 135px;">Stock Secundaria</th>
+                <th class="text-center" style="width: 110px;">Stock Total</th>
+                <th class="text-center" style="width: 100px;">Mínimo</th>
+                <th class="text-center" style="width: 110px;">Ventas Mes</th>
+                <th class="text-center" style="width: 165px;">Estado Alerta</th>
+                <th class="text-center" style="width: 135px;">Faltante Mín.</th>
+                <th class="text-center" style="width: 130px;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="inventarioTableBody">
+              <tr>
+                <td colspan="10" class="text-center py-4">Cargando inventario...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-footer">
+          <span id="tableSummaryText">Mostrando 6 productos</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SECCIÓN 5: MÓDULO DE VENTAS (CON LÓGICA DE VENTA FRACCIONADA)         -->
+    <!-- ==================================================================== -->
+    <section id="movimientos" class="section-block">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">Caja y Facturación</span>
+          <h2 class="section-title">Módulo de Ventas &amp; Reabastecimiento</h2>
+          <p class="section-desc">Venta Normal si hay stock local, o Venta Fraccionada automática combinando el inventario de ambos locales.</p>
+        </div>
+      </div>
+
+      <!-- Tarjeta destacada de última venta fraccionada (Alerta Visual Detallada) -->
+      <div id="ventaFraccionadaBanner" class="alert-fraccionada-card" style="display: none;">
+        <div class="fraccionada-card-icon">⚡</div>
+        <div class="fraccionada-card-body">
+          <h4 class="fraccionada-card-title">¡VENTA FRACCIONADA EXITOSA REGISTRADA!</h4>
+          <p class="fraccionada-card-text" id="fraccionadaBannerText">
+            <!-- Texto dinámico -->
+          </p>
+        </div>
+        <button type="button" class="btn-close-banner" id="btnCloseFraccionadaBanner">&times;</button>
+      </div>
+
+      <div class="forms-split-grid">
+
+        <!-- Formulario 1: REGISTRAR VENTA (Normal o Fraccionada) -->
+        <div class="card form-card form-card-venta">
+          <div class="card-header border-bottom">
+            <div class="form-header-badge badge-venta">
+              <span>OPERACIÓN DE SALIDA / CAJA</span>
+            </div>
+            <h3 class="card-title text-venta">Registrar Venta</h3>
+            <p class="card-subtitle">Permite vender más de lo que tiene tu local si la suma de ambos cubre la demanda.</p>
+          </div>
+
+          <div class="card-body">
+            <form id="formVenta" novalidate>
+              
+              <!-- Selector de Local Operativo -->
+              <div class="form-group highlighted-field">
+                <label for="formVentaLocalSelect" class="form-label">
+                  ¿Desde qué local estás operando? <span class="required">*</span>
+                </label>
+                <select id="formVentaLocalSelect" class="form-control form-control-bold" required>
+                  <option value="principal" selected>🏢 Sucursal Principal</option>
+                  <option value="secundaria">🏬 Sucursal Secundaria</option>
+                </select>
+                <small class="form-hint">Sucursal física donde se atiende al cliente y se factura la venta.</small>
+              </div>
+
+              <!-- Nombre del Cliente -->
+              <div class="form-group">
+                <label for="ventaCliente" class="form-label">
+                  Nombre del Cliente <span class="required">*</span>
+                </label>
+                <input type="text" id="ventaCliente" class="form-control" placeholder="Ej. Elvis Ortega / Carlos Mendoza" required>
+              </div>
+
+              <!-- Selector de Producto -->
+              <div class="form-group">
+                <label for="ventaProductoSelect" class="form-label">
+                  Producto a Vender <span class="required">*</span>
+                </label>
+                <select id="ventaProductoSelect" class="form-control" required>
+                  <option value="" disabled selected>-- Selecciona un producto --</option>
+                </select>
+
+                <!-- Helper Interactivo con Desglose entre Locales -->
+                <div id="ventaStockHelper" class="stock-helper-multi" style="display: none;">
+                  <div class="stock-branch-pill pill-local-actual">
+                    <span class="branch-pill-title" id="helperNombreLocalActual">Tu Local (Principal):</span>
+                    <strong id="helperStockLocalActual">0</strong> uds.
+                  </div>
+                  <div class="stock-branch-pill pill-local-otro">
+                    <span class="branch-pill-title" id="helperNombreLocalOtro">Otro Local (Secundaria):</span>
+                    <strong id="helperStockLocalOtro">0</strong> uds.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Cantidad a Vender -->
+              <div class="form-group">
+                <label for="ventaCantidad" class="form-label">
+                  Cantidad a Vender <span class="required">*</span>
+                </label>
+                <div class="input-with-counter">
+                  <input type="number" id="ventaCantidad" class="form-control" min="1" step="1" placeholder="Ej. 5" required>
+                  <div class="quick-qty-group">
+                    <button type="button" class="btn-qty" data-target="ventaCantidad" data-val="1">+1</button>
+                    <button type="button" class="btn-qty" data-target="ventaCantidad" data-val="5">+5</button>
+                    <button type="button" class="btn-qty" data-target="ventaCantidad" data-val="10">+10</button>
+                  </div>
+                </div>
+                <!-- Diagnóstico dinámico en vivo (Normal vs Fraccionada vs Insuficiente) -->
+                <div id="ventaLiveDiagnosis" class="live-diagnosis-box" style="display: none;"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="ventaObservacion" class="form-label">Observación / Factura / Boleta</label>
+                <input type="text" id="ventaObservacion" class="form-control" placeholder="Ej. Factura B01-0982 / Retiro en sucursal" maxlength="150">
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" id="btnSubmitVenta" class="btn btn-danger btn-block">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                  </svg>
+                  <span>Procesar Venta</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Formulario 2: INGRESAR MERCADERÍA (Entrada física en un local) -->
+        <div class="card form-card form-card-entrada">
+          <div class="card-header border-bottom">
+            <div class="form-header-badge badge-entrada">
+              <span>OPERACIÓN DE REABASTECIMIENTO</span>
+            </div>
+            <h3 class="card-title text-entrada">Ingresar Mercadería</h3>
+            <p class="card-subtitle">Incrementa el stock físico recibido en la sucursal especificada.</p>
+          </div>
+
+          <div class="card-body">
+            <form id="formEntrada" novalidate>
+              <div class="form-group highlighted-field">
+                <label for="formEntradaLocalSelect" class="form-label">
+                  Sucursal de Destino <span class="required">*</span>
+                </label>
+                <select id="formEntradaLocalSelect" class="form-control form-control-bold" required>
+                  <option value="principal" selected>🏢 Sucursal Principal</option>
+                  <option value="secundaria">🏬 Sucursal Secundaria</option>
+                </select>
+                <small class="form-hint">Local físico donde se descargará el lote de productos.</small>
+              </div>
+
+              <div class="form-group">
+                <label for="entradaProductoSelect" class="form-label">
+                  Producto a Reabastecer <span class="required">*</span>
+                </label>
+                <select id="entradaProductoSelect" class="form-control" required>
+                  <option value="" disabled selected>-- Selecciona un producto --</option>
+                </select>
+                <div id="entradaStockHelper" class="stock-helper-box stock-helper-green" style="display: none;">
+                  <span>Stock Actual en este local: <strong id="entradaStockActual">--</strong> uds.</span>
+                  <span id="entradaDeficitHelper"></span>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="entradaCantidad" class="form-label">
+                  Cantidad a Ingresar <span class="required">*</span>
+                </label>
+                <div class="input-with-counter">
+                  <input type="number" id="entradaCantidad" class="form-control" min="1" step="1" placeholder="Ej. 10" required>
+                  <div class="quick-qty-group">
+                    <button type="button" class="btn-qty" data-target="entradaCantidad" data-val="5">+5</button>
+                    <button type="button" class="btn-qty" data-target="entradaCantidad" data-val="10">+10</button>
+                    <button type="button" class="btn-qty" data-target="entradaCantidad" data-val="25">+25</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="entradaObservacion" class="form-label">Observación / Guía / Proveedor</label>
+                <input type="text" id="entradaObservacion" class="form-control" placeholder="Ej. Recepción de proveedor guía G-503" maxlength="150">
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" id="btnSubmitEntrada" class="btn btn-success btn-block">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>Ingresar a Inventario</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SECCIÓN 6: HISTORIAL GENERAL DE MOVIMIENTOS (AUDITORÍA DE ALMACÉN)    -->
+    <!-- ==================================================================== -->
+    <section id="historial" class="section-block">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">Auditoría Global</span>
+          <h2 class="section-title">Historial de Movimientos de Almacén</h2>
+          <p class="section-desc">Bitácora completa almacenada en <code>movimientos.json</code> con trazabilidad por sucursal física.</p>
+        </div>
+        <div>
+          <button id="btnRefreshMovimientos" class="btn btn-outline btn-sm">
+            <span>Recargar Auditoría</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="card table-card">
+        <div class="table-responsive">
+          <table class="data-table" id="tablaMovimientos">
+            <thead>
+              <tr>
+                <th style="width: 120px;">ID Mov.</th>
+                <th style="width: 170px;">Fecha y Hora</th>
+                <th class="text-center" style="width: 120px;">Tipo</th>
+                <th style="width: 110px;">Código</th>
+                <th>Producto</th>
+                <th class="text-center" style="width: 100px;">Cantidad</th>
+                <th>Detalle / Observación</th>
+              </tr>
+            </thead>
+            <tbody id="movimientosTableBody">
+              <tr>
+                <td colspan="7" class="text-center py-4">Cargando registros históricos...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <span id="movimientosSummaryText">Total: 0 movimientos registrados</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- SECCIÓN 7: ARQUITECTURA DEL SISTEMA                                  -->
+    <!-- ==================================================================== -->
+    <section id="arquitectura" class="section-block">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">Diseño de Ingeniería de Software</span>
+          <h2 class="section-title">Arquitectura del Sistema</h2>
+          <p class="section-desc">Diagrama formal y descomposición en 5 niveles con autenticación RBAC, venta cruzada fraccionada y auditoría.</p>
+        </div>
+        <div>
+          <a href="/api/arquitectura-imagen" target="_blank" class="btn btn-outline btn-sm">
+            <span>🔍 Abrir Diagrama en Pantalla Completa</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="card architecture-visual-card mb-4">
+        <div class="card-header border-bottom">
+          <div class="card-title-group">
+            <span class="card-badge bg-info">DIAGRAMA TÉCNICO OFICIAL</span>
+            <h3 class="card-title">Infografía de Arquitectura de Software con Roles RBAC (ACTIVE SPORT S.A.)</h3>
+          </div>
+          <span class="card-subtitle">Actores (Admin y Gerente), Frontend web, Backend Flask, Persistencia JSON y Puntos de Venta Físicos</span>
+        </div>
+        <div class="card-body text-center p-3">
+          <div class="architecture-img-container">
+            <img src="/api/arquitectura-imagen" alt="Arquitectura del Sistema ACTIVE SPORT S.A." class="architecture-img">
+          </div>
+        </div>
+      </div>
+
+      <!-- Desglose de Capas en Tarjetas -->
+      <div class="architecture-layers-grid">
+        <div class="arch-layer-card">
+          <div class="arch-layer-header">
+            <span class="arch-layer-num">1</span>
+            <h4>Capa de Presentación (Frontend)</h4>
+          </div>
+          <p>Interfaz web moderna y responsiva construida con Vanilla JS (ES6+), HTML5 semántico y CSS3 personalizado.</p>
+          <ul>
+            <li><strong>Reporte Gerencial:</strong> KPIs y podio Top 3 de artículos.</li>
+            <li><strong>Auditoría de Ventas:</strong> Consultas por día/mes/año y proyecciones.</li>
+            <li><strong>Seguimiento de Retiros:</strong> Control de pedidos fraccionados y confirmación de saldo.</li>
+            <li><strong>Módulo de Venta y Stock:</strong> Desglose en vivo de stock entre tiendas.</li>
+          </ul>
+        </div>
+
+        <div class="arch-layer-card">
+          <div class="arch-layer-header">
+            <span class="arch-layer-num">2</span>
+            <h4>Capa de Negocio y APIs (Flask Backend)</h4>
+          </div>
+          <p>Servidor RESTful en Python con Flask que orquesta la lógica comercial y garantiza consistencia:</p>
+          <ul>
+            <li><strong>Escenario 1 (Normal):</strong> Despacho total inmediato en el local actual.</li>
+            <li><strong>Escenario 2 (Fraccionada):</strong> Despacho parcial en local actual + saldo diferido en la otra sucursal.</li>
+            <li><strong>Escenario 3 (Stock Insuficiente):</strong> Validación previa y rechazo si la demanda supera la suma global.</li>
+            <li><strong>Motor de Auditoría y Proyecciones:</strong> Cálculo predictivo y agregaciones temporales.</li>
+          </ul>
+        </div>
+
+        <div class="arch-layer-card">
+          <div class="arch-layer-header">
+            <span class="arch-layer-num">3</span>
+            <h4>Capa de Persistencia y Concurrencia</h4>
+          </div>
+          <p>Almacenamiento tolerante a fallos y concurrente sin necesidad de motor externo de base de datos:</p>
+          <ul>
+            <li><strong>Atomic Locking:</strong> <code>threading.Lock()</code> para sincronizar peticiones simultáneas.</li>
+            <li><strong>Escritura Atómica:</strong> Grabación en archivo temporal (<code>.tmp</code>) y reemplazo atómico seguro.</li>
+            <li><code>productos.json</code>: Catálogo con stock independiente por sucursal.</li>
+            <li><code>seguimiento_ventas.json</code>: Órdenes, estados globales y saldos pendientes.</li>
+            <li><code>movimientos.json</code>: Bitácora auditable de cada entrada y venta.</li>
+          </ul>
+        </div>
+
+        <div class="arch-layer-card">
+          <div class="arch-layer-header">
+            <span class="arch-layer-num">4</span>
+            <h4>Red de Sucursales Físicas</h4>
+          </div>
+          <p>Topología física distribuida que opera de forma autónoma pero coordinada:</p>
+          <ul>
+            <li><strong>Sucursal Principal:</strong> Almacén central de mayor capacidad y mostrador de atención.</li>
+            <li><strong>Sucursal Secundaria:</strong> Local periférico con stock satélite.</li>
+            <li><strong>Venta Cruzada y Retiro:</strong> El cliente puede comprar en una sucursal y retirar el saldo en la otra con confirmación digital inmediata.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal / Pantalla de Login -->
+  <div id="modalLogin" class="modal-backdrop login-backdrop" style="display: none;">
+    <div class="modal-dialog login-dialog">
+      <div class="login-header">
+        <div class="login-brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+        </div>
+        <h2>ACTIVE SPORT S.A.</h2>
+        <p>Sistema de Gestión Multi-Sucursal y Venta Cruzada</p>
+      </div>
+
+      <!-- Cuentas de Acceso Rápido -->
+      <div class="quick-login-section">
+        <span class="quick-login-title">Acceso rápido con un clic:</span>
+        <div class="quick-accounts-grid">
+          <button type="button" class="quick-account-card card-admin" data-quick-user="admin" data-quick-pass="admin123">
+            <div class="account-icon">🛡️</div>
+            <div class="account-details">
+              <strong>Administrador</strong>
+              <small>admin / admin123</small>
+              <span class="account-desc">Acceso operativo total (ventas, entradas, retiros)</span>
+            </div>
+          </button>
+
+          <button type="button" class="quick-account-card card-gerente" data-quick-user="gerente" data-quick-pass="gerente123">
+            <div class="account-icon">👔</div>
+            <div class="account-details">
+              <strong>Gerente</strong>
+              <small>gerente / gerente123</small>
+              <span class="account-desc">Auditoría de ventas por sucursal, proyecciones y KPIs</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="login-divider">
+        <span>o ingresa credenciales manualmente</span>
+      </div>
+
+      <!-- Formulario de Login -->
+      <form id="formLogin" class="login-form">
+        <div class="form-group">
+          <label for="loginUsuario" class="form-label">Usuario</label>
+          <input type="text" id="loginUsuario" class="form-control" placeholder="admin o gerente" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="loginPassword" class="form-label">Contraseña</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div id="loginErrorMsg" class="login-error-alert" style="display: none;"></div>
+        <button type="submit" id="btnSubmitLogin" class="btn btn-primary btn-block btn-login-submit">
+          <span>Ingresar al Sistema</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación para reiniciar datos -->
+  <div id="modalConfirmReset" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">¿Restablecer datos originales?</h3>
+        <button id="btnCancelResetX" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Esta acción restaurará:</p>
+        <ul style="padding-left: 1.25rem; font-size: 0.85rem; line-height: 1.6;">
+          <li><strong>productos.json</strong>: Stock independiente por sucursal.</li>
+          <li><strong>seguimiento_ventas.json</strong>: Órdenes de prueba y retiros pendientes.</li>
+          <li><strong>movimientos.json</strong>: Bitácora de transacciones.</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button id="btnCancelReset" class="btn btn-outline">Cancelar</button>
+        <button id="btnConfirmReset" class="btn btn-danger">Sí, restablecer datos</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p><strong>ACTIVE SPORT S.A.</strong> &copy; 2026 - Control de Inventarios Físicos &amp; Venta Cruzada Fraccionada.</p>
+      <p class="text-muted">Sucursales Físicas: Sucursal Principal &bull; Sucursal Secundaria</p>
+    </div>
+  </footer>
+
+  <script src="/static/js/script.js"></script>
+</body>
+</html>

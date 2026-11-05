@@ -1,0 +1,58 @@
+[
+  {
+    "id": "MOV-0001",
+    "codigo_producto": "AS001",
+    "tipo": "Entrada",
+    "cantidad": 20,
+    "fecha": "2026-11-01 08:30:00",
+    "observacion": "Recepción de lote inicial en Sucursal Principal"
+  },
+  {
+    "id": "MOV-0002",
+    "codigo_producto": "AS001",
+    "tipo": "Venta",
+    "cantidad": 6,
+    "fecha": "2026-11-02 11:15:20",
+    "observacion": "Venta en mostrador Sucursal Principal - Boleta B01-0045"
+  },
+  {
+    "id": "MOV-0003",
+    "codigo_producto": "AS003",
+    "tipo": "Venta",
+    "cantidad": 5,
+    "fecha": "2026-11-03 16:40:10",
+    "observacion": "Venta institucional Club Juvenil - Sucursal Secundaria"
+  },
+  {
+    "id": "MOV-0004",
+    "codigo_producto": "AS005",
+    "tipo": "Venta",
+    "cantidad": 4,
+    "fecha": "2026-11-04 14:10:05",
+    "observacion": "Venta en tienda física Sucursal Principal"
+  },
+  {
+    "id": "MOV-0005",
+    "codigo_producto": "AS001",
+    "tipo": "Entrada",
+    "cantidad": 25,
+    "fecha": "2026-11-05 14:04:14",
+    "observacion": "Ingreso de mercadería (Sucursal Principal)"
+  },
+  {
+    "id": "MOV-0006",
+    "codigo_producto": "AS001",
+    "tipo": "Entrada",
+    "cantidad": 25,
+    "fecha": "2026-11-05 14:04:35",
+    "observacion": "Ingreso de mercadería (Sucursal Secundaria)"
+  },
+  {
+    "id": "MOV-0007",
+    "codigo_producto": "AS001",
+    "tipo": "Venta",
+    "cantidad": 10,
+    "fecha": "2026-11-05 14:14:07",
+    "observacion": "Venta Fraccionada a 'holllllll' (ORD-0004) - Entregadas: 8 en Sucursal Secundaria | Pendientes: 2 en Sucursal Principal"
+  }
+]
